@@ -12,12 +12,12 @@ function submitForm(e) {
   let delayValue = Number(delay.value);
 
   for (let i = 1; i <= amount.value; i++) {
-    createPromise(delayValue)
-      .then(() => {
-        Notify.success(`✅ Fulfilled promise ${i} in ${delayValue}ms`);
+    createPromise(i, delayValue)
+      .then(({position, delay}) => {
+        Notify.success(`✅ Fulfilled promise ${position} in ${delay}ms`);
       })
-      .catch(() => {
-        Notify.failure(`❌ Rejected promise ${i} in ${delayValue}ms`);
+      .catch(({position, delay}) => {
+        Notify.failure(`❌ Rejected promise ${position} in ${delay}ms`);
       });
     delayValue += Number(step.value);
   }
@@ -25,14 +25,14 @@ function submitForm(e) {
   e.currentTarget.reset();
 }
 
-function createPromise(delay) {
+function createPromise(position, delay) {
   const promise = new Promise((res, rej) => {
     const shouldResolve = Math.random() > 0.3;
     setTimeout(() => {
       if (shouldResolve) {
-        res();
+        res({position, delay});
       } else {
-        rej();
+        rej({position, delay});
       }
     }, delay);
   });
